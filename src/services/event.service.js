@@ -17,7 +17,7 @@ const createEvent = async (eventBody) => {
  * @param {Object} options - Query options
  * @returns {Promise<QueryResult>}
  */
-const queryEvents = async (filter, options) => {
+const queryEvent = async (filter, options) => {
   const event = await Event.find(filter).populate('createdBy', 'name email').populate('attendees', 'name email');
   return event;
 };
@@ -85,7 +85,7 @@ const inviteUserToEvent = async (eventId, userId) => {
 
 module.exports = {
   createEvent,
-  queryEvents,
+  queryEvent,
   getEventById,
   updateEventById,
   deleteEventById,

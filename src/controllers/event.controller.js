@@ -4,22 +4,25 @@ const { eventService } = require('../services');
 const ApiError = require('../utils/ApiError');
 
 const createEvent = catchAsync(async (req, res) => {
-  const event = await eventService.create(req.body);
+  const event = await eventService.createEvent({
+    ...req.body,
+    createdBy: req.user.id,
+  });
   res.status(httpStatus.CREATED).send(event);
 });
 
-const getEvents = catchAsync(async (req, res) => {
+const getEvent = catchAsync(async (req, res) => {
   const filter = {
     createdBy: req.user.id,
     ...(req.query.startDate && { startTime: { $gte: new Date(req.query.startDate) } }),
     ...(req.query.endDate && { endTime: { $lte: new Date(req.query.endDate) } }),
     ...(req.query.status && { status: req.query.status }),
   };
-  const event = await eventService.queryEvents(filter);
+  const event = await eventService.queryEvent(filter);
   res.send(event);
 });
 
-const getEvent = catchAsync(async (req, res) => {
+const getEventById = catchAsync(async (req, res) => {
   const event = await eventService.getEventById(req.params.id);
   if (!event) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Event not found');
@@ -44,8 +47,8 @@ const inviteUser = catchAsync(async (req, res) => {
 
 module.exports = {
   createEvent,
-  getEvents,
   getEvent,
+  getEventById,
   updateEvent,
   deleteEvent,
   inviteUser,

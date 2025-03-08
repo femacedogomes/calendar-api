@@ -12,7 +12,7 @@ const createEvent = {
   }),
 };
 
-const getEvents = {
+const getEvent = {
   query: Joi.object().keys({
     startDate: Joi.date(),
     endDate: Joi.date().greater(Joi.ref('startDate')),
@@ -54,7 +54,7 @@ const inviteUser = {
 
 module.exports = {
   createEvent,
-  getEvents,
+  getEvent,
   updateEvent,
   deleteEvent,
   inviteUser,
