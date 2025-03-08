@@ -13,8 +13,8 @@ const eventSchema = new mongoose.Schema({
 });
 
 /**
- * @typedef Events
+ * @typedef Event
  */
-const Events = mongoose.model('Events', eventSchema);
+const Event = mongoose.model('Event', eventSchema);
 
-module.exports = Events;
+module.exports = Event;

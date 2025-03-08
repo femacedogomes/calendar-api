@@ -1,41 +1,41 @@
 const httpStatus = require('http-status');
-const { Events } = require('../models');
+const { Event } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
  * Create an event
  * @param {Object} eventBody
- * @returns {Promise<Events>}
+ * @returns {Promise<Event>}
  */
 const createEvent = async (eventBody) => {
-  return Events.create(eventBody);
+  return Event.create(eventBody);
 };
 
 /**
- * Query for events
+ * Query for event
  * @param {Object} filter - Mongo filter
  * @param {Object} options - Query options
  * @returns {Promise<QueryResult>}
  */
 const queryEvents = async (filter, options) => {
-  const events = await Events.find(filter).populate('createdBy', 'name email').populate('attendees', 'name email');
-  return events;
+  const event = await Event.find(filter).populate('createdBy', 'name email').populate('attendees', 'name email');
+  return event;
 };
 
 /**
  * Get event by id
  * @param {ObjectId} id
- * @returns {Promise<Events>}
+ * @returns {Promise<Event>}
  */
 const getEventById = async (id) => {
-  return Events.findById(id).populate('createdBy', 'name email').populate('attendees', 'name email');
+  return Event.findById(id).populate('createdBy', 'name email').populate('attendees', 'name email');
 };
 
 /**
  * Update event by id
  * @param {ObjectId} eventId
  * @param {Object} updateBody
- * @returns {Promise<Events>}
+ * @returns {Promise<Event>}
  */
 const updateEventById = async (eventId, updateBody) => {
   const event = await getEventById(eventId);
@@ -51,7 +51,7 @@ const updateEventById = async (eventId, updateBody) => {
 /**
  * Delete event by id
  * @param {ObjectId} eventId
- * @returns {Promise<Events>}
+ * @returns {Promise<Event>}
  */
 const deleteEventById = async (eventId) => {
   const event = await getEventById(eventId);
@@ -66,7 +66,7 @@ const deleteEventById = async (eventId) => {
  * Invite user to event
  * @param {ObjectId} eventId
  * @param {ObjectId} userId
- * @returns {Promise<Events>}
+ * @returns {Promise<Event>}
  */
 const inviteUserToEvent = async (eventId, userId) => {
   const event = await getEventById(eventId);
