@@ -13,7 +13,7 @@ router
 
 router
   .route('/:id')
-  .get(auth(), validate(eventValidation.getEvent), eventController.getEvent)
+  .get(auth(), validate(eventValidation.getEvent), eventController.getEventById)
   .put(auth(), validate(eventValidation.updateEvent), eventController.updateEvent)
   .delete(auth(), validate(eventValidation.deleteEvent), eventController.deleteEvent);
 

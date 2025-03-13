@@ -12,14 +12,17 @@ const createEvent = catchAsync(async (req, res) => {
 });
 
 const getEvent = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+
   const filter = {
-    createdBy: req.user.id,
+    $or: [{ createdBy: userId }, { attendees: userId }],
     ...(req.query.startDate && { startTime: { $gte: new Date(req.query.startDate) } }),
     ...(req.query.endDate && { endTime: { $lte: new Date(req.query.endDate) } }),
     ...(req.query.status && { status: req.query.status }),
   };
-  const event = await eventService.queryEvent(filter);
-  res.send(event);
+
+  const events = await eventService.queryEvent(filter);
+  res.send(events);
 });
 
 const getEventById = catchAsync(async (req, res) => {
@@ -41,7 +44,7 @@ const deleteEvent = catchAsync(async (req, res) => {
 });
 
 const inviteUser = catchAsync(async (req, res) => {
-  const event = await eventService.inviteUserToEvent(req.params.id, req.body.userId);
+  const event = await eventService.inviteUserToEvent(req.params.id, req.user.id);
   res.send(event);
 });
 

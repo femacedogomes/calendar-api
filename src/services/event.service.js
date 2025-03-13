@@ -8,6 +8,27 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<Event>}
  */
 const createEvent = async (eventBody) => {
+  const { createdBy, startTime, endTime } = eventBody;
+
+  const conflictingEvent = await Event.findOne({
+    createdBy,
+    $or: [
+      {
+        startTime: { $lt: new Date(endTime) },
+        endTime: { $gt: startTime },
+      },
+      {
+        startTime: { $gte: new Date(startTime), $lt: new Date(endTime) },
+      },
+    ],
+  });
+
+  if (conflictingEvent) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Conflito de horário com o evento "${conflictingEvent.title}" de ${conflictingEvent.startTime} até ${conflictingEvent.endTime}.`
+    );
+  }
   return Event.create(eventBody);
 };
 
@@ -18,7 +39,7 @@ const createEvent = async (eventBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryEvent = async (filter, options) => {
-  const event = await Event.find(filter).populate('createdBy', 'name email').populate('attendees', 'name email');
+  const event = await Event.find(filter).populate('attendees', 'name email');
   return event;
 };
 
@@ -76,6 +97,26 @@ const inviteUserToEvent = async (eventId, userId) => {
 
   if (event.attendees.includes(userId)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'User already invited');
+  }
+
+  const conflictingEvent = await Event.findOne({
+    attendees: userId,
+    $or: [
+      {
+        startTime: { $lt: event.endTime },
+        endTime: { $gt: event.startTime },
+      },
+      {
+        startTime: { $gte: event.startTime, $lt: event.endTime },
+      },
+    ],
+  });
+
+  if (conflictingEvent) {
+    throw new ApiError(
+      httpStatus.CONFLICT,
+      `Usuário já está participando de um evento no mesmo horário: "${conflictingEvent.title}"`
+    );
   }
 
   event.attendees.push(userId);

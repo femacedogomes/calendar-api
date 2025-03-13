@@ -47,9 +47,6 @@ const inviteUser = {
   params: Joi.object().keys({
     id: Joi.string().custom(objectId).required(),
   }),
-  body: Joi.object().keys({
-    userId: Joi.string().custom(objectId).required(),
-  }),
 };
 
 module.exports = {
